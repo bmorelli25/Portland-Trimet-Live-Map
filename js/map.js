@@ -8,6 +8,9 @@ var markers=[];
 var contents = [];
 var infowindows = [];
 
+//holds our checkboxes
+var checkboxes = [];
+
 //var icon = 'http://i.imgur.com/imuR74T.png'; - 40px .png
 //var icon = 'http://i.imgur.com/SHyzGIk.png'; - 20px .png
 
@@ -161,6 +164,65 @@ setInterval(function updateLocation() {
     
     
 }, 5000);
+
+
+// creating checkboxes dynamically. Huh, it actually works. Cool.
+
+
+for (let ch = 0; ch < 201; ch++){
+    for (let ve = 0; ve < vehicles.length; ve++){
+        if ( ch == vehicles[ve][3]){
+            
+            let tempvariable = vehicles[ve][3];
+            
+            checkboxes[ch] = document.createElement('input');
+            checkboxes[ch].id = "bus" + vehicles[ve][3];
+            //checkboxes[ch].onclick = ("addRemoveBus(" + vehicles[ve][3] + ")");
+            //checkboxes[ch].onclick = "addRemoveBus(57)";
+            checkboxes[ch].value = vehicles[ve][3];
+            checkboxes[ch].type = "checkbox";
+            checkboxes[ch].checked = "checked";
+
+            checkboxes[ch].addEventListener('click', function(){
+                addRemoveBus(tempvariable);
+            })
+            
+            let label = document.createElement('label')
+            label.htmlFor = "id";
+            label.appendChild(document.createTextNode("" + vehicles[ve][3]));
+
+            container.appendChild(checkboxes[ch]);
+            container.appendChild(label);
+            //exits the second for loop so we don't get multiple checkboxes for the same bus route
+            break;
+        }
+    }    
+}
+
+
+
+/**
+for (var ch = 0; ch < vehicles.length; ch++){
+    
+    checkboxes[ch] = document.createElement('input');
+    checkboxes[ch].id = "bus" + vehicles[ch][3];
+    checkboxes[ch].onclick = "addRemoveBus(" + vehicles[ch][3] + ")";
+    checkboxes[ch].value = vehicles[ch][3];
+    checkboxes[ch].type = "checkbox";
+    checkboxes[ch].checked = "checked";
+
+    var label = document.createElement('label')
+    label.htmlFor = "id";
+    label.appendChild(document.createTextNode("" + vehicles[ch][3]));
+
+    container.appendChild(checkboxes[ch]);
+    container.appendChild(label);
+    
+    
+}
+
+**/
+
 
 
 /** 
