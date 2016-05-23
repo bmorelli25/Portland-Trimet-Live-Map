@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+  </head>
+  <body>
+      <div id="container">
+            <div id="map"></div>
+      </div>
+       <div id="floating-panel">
+           <input onclick="clearMarkers(57);" type=button value="Hide Markers (57)">
+           <input onclick="showMarkers();" type=button value="Show All Markers">
+        </div>
+      
+      
+      
+      <label><input id="57" type="checkbox" >57</label>
+      <label><input id="100" type="checkbox" >100</label>
+      <label><input id="200" type="checkbox" >200</label>
+ 
+      <button onclick="updateMap()">Update Map</button>
+      
+          <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="js/map.js"></script>
+  </body>
+</html>
