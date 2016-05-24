@@ -95,8 +95,8 @@ for (i = 0; i < vehicles.length; i++) {
         //title: titleTemp
   });
 
-    //so that no markers show up initially
-    markers[i].setMap(null);
+    //activate so that no markers show up initially
+    //markers[i].setMap(null);
     
   markers[i].index = i;
   contents[i] = '<div class="popup_container">' + signMessageForThisMarker + '<br>' + ( vehicleDelay > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicleDelay) + ' seconds. </div>';
@@ -121,7 +121,7 @@ console.log("Markers title", markers[0]["title"])
 
     // creating checkboxes dynamically. Huh, it actually works. Cool.
    
-for (let ch = 0; ch < 201; ch++){
+for (let ch = 0; ch < 291; ch++){
     for (let ve = 0; ve < vehicles.length; ve++){
         if ( ch == vehicles[ve][3]){
             
@@ -133,7 +133,7 @@ for (let ch = 0; ch < 201; ch++){
             //checkboxes[ch].onclick = "addRemoveBus(57)";
             checkboxes[ch].value = vehicles[ve][3];
             checkboxes[ch].type = "checkbox";
-            //checkboxes[ch].checked = "checked";
+            checkboxes[ch].checked = "checked";
 
             checkboxes[ch].addEventListener('click', function(){
                 addRemoveBus(tempvariable);
@@ -141,7 +141,18 @@ for (let ch = 0; ch < 201; ch++){
             
             let label = document.createElement('label')
             label.htmlFor = "id";
-            label.appendChild(document.createTextNode("" + vehicles[ve][3]));
+            
+            if (vehicles[ve][3] == 290 ){
+                if(vehicles[ve][3] == 290){
+                //orange line max
+                label.appendChild(document.createTextNode("Orange Line"));
+                }
+                
+            
+            } else {
+                label.appendChild(document.createTextNode("" + vehicles[ve][3]));
+            }
+                
 
             var node = document.getElementById("buttonsHere");
             node.appendChild(checkboxes[ch]);
@@ -229,9 +240,6 @@ setInterval(function updateLocation() {
                             //doesn't work - contents isn't updated. 
                             //contents[d] = '<div class="popup_container">' + vehicles[c][4] + '<br>' + ( vehicles[c][7] > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicles[c][7]) + ' seconds. </div>';
                             
-                        } else {
-                            //no marker was found, so we must make one
-                            console.log("no match", d, markers[d]);
                         }
                     }  
                 }   
@@ -242,7 +250,7 @@ setInterval(function updateLocation() {
 
 
  $("#checkAll").click(function () {
-     $('input:checkbox').not(this).prop('checked', this.checked);
+     $('input:checkbox').not(this).prop('checked', !this.checked).click();
  });
 
 /** Trying to get the stupid check all button to work is difficult...
