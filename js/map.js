@@ -25,7 +25,8 @@ var checkboxes = [];
     var signMessage = trimetData["resultSet"].vehicle[i].signMessage;
     var busDirection = trimetData["resultSet"].vehicle[i].direction;
     var vehicleID = trimetData["resultSet"].vehicle[i].vehicleID;
-		vehicles.push([lat,long,latlngTemp,routeNum,signMessage,busDirection,vehicleID]);
+    var delayV = trimetData["resultSet"].vehicle[i].delay;
+		vehicles.push([lat,long,latlngTemp,routeNum,signMessage,busDirection,vehicleID,delayV]);
  }
 //logs vehicle array for testing
 console.log("Vehicle Array ", vehicles);
@@ -52,7 +53,9 @@ for (i = 0; i < vehicles.length; i++) {
   let vehicleNum = "" + (vehicles[i][3]);
   let vehicleNumNum = vehicles[i][3];
   let vehicleIDID = vehicles[i][6];
-    
+  let vehicleDelay = vehicles[i][7];
+   
+    /** SVG ICON. Can't get numbers involved
   var icon = {
         path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
         fillColor: (tempDirection ? '#FF0000' : '#ff8000'),
@@ -61,6 +64,9 @@ for (i = 0; i < vehicles.length; i++) {
         scale: .5,
         text: "57"
     }
+    **/
+    
+    var icon = '../Portland-Trimet-Live-Map/images/' + vehicleNumNum + '-' + (tempDirection ? 'g' : 'b') + '.png';
 
 	markers[i] = new google.maps.Marker({
   	position: longlatTemp,
@@ -73,7 +79,7 @@ for (i = 0; i < vehicles.length; i++) {
   });
 
   markers[i].index = i;
-  contents[i] = '<div class="popup_container">' + signMessageForThisMarker + '</div>';
+  contents[i] = '<div class="popup_container">' + signMessageForThisMarker + '<br>' + ( vehicleDelay > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicleDelay) + ' seconds. </div>';
 
 	
   infowindows[i] = new google.maps.InfoWindow({
@@ -191,8 +197,9 @@ for (let ch = 0; ch < 201; ch++){
             label.htmlFor = "id";
             label.appendChild(document.createTextNode("" + vehicles[ve][3]));
 
-            container.appendChild(checkboxes[ch]);
-            container.appendChild(label);
+            var node = document.getElementById("buttonsHere");
+            node.appendChild(checkboxes[ch]);
+            node.appendChild(label);
             //exits the second for loop so we don't get multiple checkboxes for the same bus route
             break;
         }
