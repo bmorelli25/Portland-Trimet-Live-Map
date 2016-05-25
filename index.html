@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" href="https://bootswatch.com/paper/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row top-buffer"></div>
+            <div class="row">
+                <div class="col-sm-3 ">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Bus Routes</h3>
+                        </div>
+                        <div class="panel-body">                                    
+                                <div id="masterButton">
+                                    <input type="checkbox" id="checkAllBus" checked>Show/Hide All Bus Routes<br>
+                                    
+                                </div>
+                                <form id="buttonsHere"></form>
+                        </div>
+                    </div>
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">MAX Routes</h3>
+                        </div>
+                        <div class="panel-body">
+                            
+                            <div id="masterButton">
+                                    <input type="checkbox" id="checkAllRail" checked>Show/Hide All MAX Routes<br>
+                                </div>
+                            
+                                <form id="railButtonsHere"></form>
+                        </div>
+                    </div>
+                    <div class="panel panel-warning">
+                        <div class="panel-body">
+                            <p><span style="color:grey">South and West bound busses = grey</span><br>North and East bound busses = black</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        
+        
+        
+        
+            
+            
+
+        
+        
+
+        
+        <!--
+        <div id="floating-panel">
+            <label><input id="bus54" onclick="addRemoveBus(54)" value=54 type="checkbox" checked="checked">54</label>
+            <label><input id="bus57" onclick="addRemoveBus(57)" value=57 type="checkbox" checked>57</label>
+            <label><input id="bus58" onclick="addRemoveBus(58)" value=58 type="checkbox" checked>58</label>
+            <label><input id="bus62" onclick="addRemoveBus(62)" value=62 type="checkbox" checked>62</label>
+            <label><input id="bus100" onclick="addRemoveBus(100)" value=100 type="checkbox" checked>100</label>
+            <label><input id="bus200" onclick="addRemoveBus(200)" value=200 type="checkbox" checked>200</label>
+        </div>
+      
+-->
+        
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="js/map.js"></script>
+    </body>
+</html>

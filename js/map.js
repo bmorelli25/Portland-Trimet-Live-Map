@@ -62,11 +62,42 @@ for (i = 0; i < vehicles.length; i++) {
        
     //var icon = '../Portland-Trimet-Live-Map/images/' + vehicleNumNum + '-' + (tempDirection ? 'g' : 'b') + '.png';
     
+    // SET FILL COLOR BASED ON VEHICLE AND DIRECTION
+    var fillColor;
+    switch (vehicleNumNum){
+                case 90:
+                    //red
+                    fillColor = tempDirection ? '#F44336' : '#F44336';
+                    break;
+                case 100:   
+                    //blue
+                    fillColor = tempDirection ? '#2196F3' : '#2196F3';
+                    break;
+                case 190:
+                    //yellow
+                    fillColor = tempDirection ? '#FFEB3B' : '#FFEB3B';
+                    break;
+                case 200:
+                    //green
+                    fillColor = tempDirection ? '#4CAF50' : '#4CAF50';
+                    break;
+                case 290:
+                    //orange
+                    fillColor = tempDirection ? '#FF9800' : '#FF9800';
+                    break;
+                default:
+                    //bus
+                    fillColor = tempDirection ? '#607D8B' : '#607D8B';
+                    break;
+            }
+    
          var icon = {
             path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
-            fillColor: (tempDirection ? '#FF0000' : '#ff8000'),
+            fillColor: fillColor,
             fillOpacity: .6,
+            strokeColor: '#ffffff',
             strokeWeight: 1,
+            strokeOpacity: .6,
             scale: .5,
             text: "57"
         }
@@ -134,27 +165,43 @@ for (let ch = 0; ch < 291; ch++){
             checkboxes[ch].value = vehicles[ve][3];
             checkboxes[ch].type = "checkbox";
             checkboxes[ch].checked = "checked";
+            checkboxes[ch].name = "bus" + vehicles[ve][3];
 
             checkboxes[ch].addEventListener('click', function(){
                 addRemoveBus(tempvariable);
             })
             
             let label = document.createElement('label')
-            label.htmlFor = "id";
+            label.htmlFor = "bus" + vehicles[ve][3];
             
-            if (vehicles[ve][3] == 290 ){
-                if(vehicles[ve][3] == 290){
-                //orange line max
-                label.appendChild(document.createTextNode("Orange Line"));
-                }
-                
-            
-            } else {
-                label.appendChild(document.createTextNode("" + vehicles[ve][3]));
+            var node;
+            switch (vehicles[ve][3]){
+                case 90:
+                    label.appendChild(document.createTextNode("Red Line" + "\u00A0")); 
+                    node = document.getElementById("railButtonsHere");
+                    break;
+                case 100:                   
+                    label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));  
+                    node = document.getElementById("railButtonsHere");
+                    break;
+                case 190:
+                    label.appendChild(document.createTextNode("Yellow Line" + "\u00A0"));
+                    node = document.getElementById("railButtonsHere");
+                    break;
+                case 200:
+                    label.appendChild(document.createTextNode("Green Line" + "\u00A0"));
+                    node = document.getElementById("railButtonsHere");
+                    break;
+                case 290:
+                    label.appendChild(document.createTextNode("Orange Line" + "\u00A0"));
+                    node = document.getElementById("railButtonsHere");
+                    break;
+                default:
+                    label.appendChild(document.createTextNode("" + vehicles[ve][3] + "\u00A0"));
+                    node = document.getElementById("buttonsHere");
+                    break;
             }
-                
-
-            var node = document.getElementById("buttonsHere");
+            
             node.appendChild(checkboxes[ch]);
             node.appendChild(label);
             //exits the second for loop so we don't get multiple checkboxes for the same bus route
@@ -249,9 +296,25 @@ setInterval(function updateLocation() {
 }, 5000);
 
 
- $("#checkAll").click(function () {
-     $('input:checkbox').not(this).prop('checked', !this.checked).click();
+ $("#checkAllBus").click(function () {
+     $('#buttonsHere input:checkbox').not(this).prop('checked', !this.checked).click();
  });
+
+ $("#checkAllRail").click(function () {
+     $('#railButtonsHere input:checkbox').not(this).prop('checked', !this.checked).click();
+ });
+
+
+
+//necessary for boostrap??
+$(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 10; // Calculate the top offset
+
+    $('#map').css('height', h-offsetTop);
+}).resize();
+
+//.css("width", 400) add after height above if necessary
 
 /** Trying to get the stupid check all button to work is difficult...
 $('input:checkbox').change(

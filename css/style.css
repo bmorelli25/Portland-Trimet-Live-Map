@@ -1,13 +1,8 @@
 html, body {
     height: 100%;
 }
-#container{
-    width: 100%;
-    height: 85%;
-    position:relative;
-}
 #map{
     width: 100%;
     height: 100%;
-
 }
+.top-buffer { margin-top:10px; }
