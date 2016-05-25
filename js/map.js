@@ -64,6 +64,7 @@ for (i = 0; i < vehicles.length; i++) {
     
     // SET FILL COLOR BASED ON VEHICLE AND DIRECTION
     var fillColor;
+    var strokeColor = tempDirection ? '#ffffff' : '#000000' ;
     switch (vehicleNumNum){
                 case 90:
                     //red
@@ -95,7 +96,7 @@ for (i = 0; i < vehicles.length; i++) {
             path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
             fillColor: fillColor,
             fillOpacity: .6,
-            strokeColor: '#ffffff',
+            strokeColor: strokeColor,
             strokeWeight: 1,
             strokeOpacity: .6,
             scale: .5,
