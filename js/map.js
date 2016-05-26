@@ -1,3 +1,33 @@
+/**
+POTENTIAL UPGRADES:
+
+1)
+http://underscorejs.org/
+Use Underscore to simplify array searching and hopefully remove nested for loops
+
+2)
+When dynamically creating the DOM checkboxes, add children to div tags and use bootstrap to specify how many checkboxes per row depending on the size of the screen
+
+3)
+xxxDONExxx
+Master Checkbox:
+Instead of looping through all of the bus numbers when this is checked/unchecke, create a new function that instantly turns on/off all busses.
+
+4)
+Add Trains to an array like this for easier testing and determing if train or bus
+
+var trains = [90,100,190,200,290];
+var testValue = 100;
+
+if (trains.indexOf(testValue) >= 0){
+    alert("true");
+}
+
+
+**/
+
+
+
 //simplified JSON data
 var vehicles = [];
 //holds are markers, contents, and info winders
@@ -215,44 +245,7 @@ for (let ch = 0; ch < 291; ch++){
     
 });
 
-//hide bus when clicked
-function clearMarkers(routeToClear) {
-    for (let a = 0; a < markers.length; a++){
-        if (markers[a]["busNum"] == routeToClear){
-                    console.log("Marker GOS: ", markers[a][3]);
-            markers[a].setMap(null);
-            //setMapOnAll(null);
-        } 
-                console.log("Marker STAYS: ", markers[a][3]);
 
-    }
-}
-
-// Shows any markers currently in the array.
-function showMarkers(routeToAdd) {
-    for (var b = 0; b < markers.length; b++){
-        if (markers[b]["busNum"] == routeToAdd){
-            console.log("Marker Added: ", markers[b][3]);
-            markers[b].setMap(map);
-            //setMapOnAll(null);
-        } 
-        //setMapOnAll(map);
-    }
-}
-
-//function is called when a route is checked or unchecked
-function addRemoveBus(busRoute){
-    //if checked, we add the bus route to the map by calling showMarkers(busRoute);
-    if (document.getElementById("bus"+busRoute).checked) {
-        showMarkers(busRoute);
-    }
-    //if unchecked, we remove the bus route by calling clearMarkers();
-    else {
-    	console.log("Box is NOT checked");
-        clearMarkers(busRoute);
-        //alert("Checkbox wasn't checked.");
-    }
-};
 
 
 
@@ -296,14 +289,83 @@ setInterval(function updateLocation() {
     });  
 }, 5000);
 
-
+// THESE TWO FUNCTIONS WATCH FOR CLICKS ON THE MASTER CHECKBOX AND RUN 'addRemoveAll' IF THEY ARE CLICKED
  $("#checkAllBus").click(function () {
-     $('#buttonsHere input:checkbox').not(this).prop('checked', !this.checked).click();
+     $('#buttonsHere input:checkbox').not(this).prop('checked', this.checked);
+     addRemoveAll("checkAllBus", true); 
  });
 
  $("#checkAllRail").click(function () {
-     $('#railButtonsHere input:checkbox').not(this).prop('checked', !this.checked).click();
+     $('#railButtonsHere input:checkbox').not(this).prop('checked', this.checked);
+     addRemoveAll("checkAllRail", false);
  });
+
+// THIS IS THE FUNCTION THAT ADDS OR REMOVES ALL BUS/RAIL. MUCH QUICKER THAN THE LOOP I HAD BEFORE
+function addRemoveAll(domElement, isBus){
+    if (document.getElementById(domElement).checked) {     
+        for (let bb = 0; bb < markers.length; bb++){
+            let markerNum = markers[bb]["busNum"];
+            if (isBus){
+                if (markerNum != 90 && markerNum != 100 && markerNum != 190 && markerNum != 200 && markerNum !=290){
+                markers[bb].setMap(map);
+                } 
+            } else {
+                if (markerNum == 90 || markerNum == 100 || markerNum == 190 || markerNum == 200 || markerNum ==290){
+                markers[bb].setMap(map);
+                }
+            }  
+        }
+    } else {
+        for (let bb = 0; bb < markers.length; bb++){
+            let markerNum = markers[bb]["busNum"];
+            if (isBus){
+                if (markerNum != 90 && markerNum != 100 && markerNum != 190 && markerNum != 200 && markerNum != 290){
+                markers[bb].setMap(null);
+                } 
+            } else {
+                if (markerNum == 90 || markerNum == 100 || markerNum == 190 || markerNum == 200 || markerNum == 290){
+                markers[bb].setMap(null);
+                } 
+            } 
+        }
+    }  
+}
+
+//THIS FUNCTION IS CALLED WHEN A SINGULAR ROUTE IS CHECKED OR UNCHECKED. IT THEN CALLS 'clearMarkers' or 'showMarkers'
+function addRemoveBus(busRoute){
+    //if checked, we add the bus route to the map by calling showMarkers(busRoute);
+    if (document.getElementById("bus"+busRoute).checked) {
+        showMarkers(busRoute);
+    }
+    //if unchecked, we remove the bus route by calling clearMarkers();
+    else {
+    	console.log("Box is NOT checked");
+        clearMarkers(busRoute);
+        //alert("Checkbox wasn't checked.");
+    }
+}
+
+//THIS FUNCTION CLEARS INDIVIDUAL MARKERS BY LOOPING THROUGH THE ARRAY
+function clearMarkers(routeToClear) {
+    for (let a = 0; a < markers.length; a++){
+        if (markers[a]["busNum"] == routeToClear){
+            markers[a].setMap(null);
+            //setMapOnAll(null);
+        } 
+    }
+}
+
+//THIS FUNCTION SHOWS INDIVIDUAL MARKERS BY LOOPING THROUGH THE ARRAY
+function showMarkers(routeToAdd) {
+    for (var b = 0; b < markers.length; b++){
+        if (markers[b]["busNum"] == routeToAdd){
+            console.log("Marker Added: ", markers[b][3]);
+            markers[b].setMap(map);
+            //setMapOnAll(null);
+        } 
+        //setMapOnAll(map);
+    }
+}
 
 
 
