@@ -24,10 +24,17 @@ if (trains.indexOf(testValue) >= 0){
 }
 
 
+5) 
+xxxDONExxx
+Utilize cached values for loop optimization
+
+
 **/
 
 
-
+//center map in middle of Portland, zoom to level 11
+var pdxCoords = new google.maps.LatLng(45.521190, -122.629835)
+var mapZoomLevel = 11;
 //simplified JSON data
 var vehicles = [];
 //holds are markers, contents, and info winders
@@ -37,7 +44,6 @@ var infowindows = [];
 
 //holds our checkboxes
 var checkboxes = [];
-
 
 //get JSON from Trimet.com
 var trimetData;
@@ -51,78 +57,78 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
 
 
 //creates the vehicles array from the JSON dataset 'currently above'
- for (var i = 0; i < trimetData["resultSet"]["vehicle"].length; i++) {
-    
-    var long = trimetData["resultSet"].vehicle[i].longitude;
-    var lat = trimetData["resultSet"].vehicle[i].latitude;
-    var latlngTemp = new google.maps.LatLng(lat, long);
-    var routeNum = trimetData["resultSet"].vehicle[i].routeNumber;
-    var signMessage = trimetData["resultSet"].vehicle[i].signMessage;
-    var busDirection = trimetData["resultSet"].vehicle[i].direction;
-    var vehicleID = trimetData["resultSet"].vehicle[i].vehicleID;
-    var delayV = trimetData["resultSet"].vehicle[i].delay;
-		vehicles.push([lat,long,latlngTemp,routeNum,signMessage,busDirection,vehicleID,delayV]);
- }
-//logs vehicle array for testing
-console.log("Vehicle Array ", vehicles);
+    for (var i = 0, iLength = trimetData["resultSet"]["vehicle"].length; i < iLength; i++) {
+        let iCurrentVehicle = trimetData["resultSet"].vehicle[i];
+        
+        var long = iCurrentVehicle.longitude;
+        var lat = iCurrentVehicle.latitude;
+        var latlngTemp = new google.maps.LatLng(lat, long);
+        var routeNum = iCurrentVehicle.routeNumber;
+        var signMessage = iCurrentVehicle.signMessage;
+        var busDirection = iCurrentVehicle.direction;
+        var vehicleID = iCurrentVehicle.vehicleID;
+        var delayV = iCurrentVehicle.delay;
+            vehicles.push([lat,long,latlngTemp,routeNum,signMessage,busDirection,vehicleID,delayV]);
+    }
+    //logs vehicle array for testing
+    console.log("Vehicle Array ", vehicles);
 
-//load the map options
-var mapOptions = {
-	center: new google.maps.LatLng(45.521190, -122.629835),
-	zoom: 11			
-};
-          
-//creates the map in the div"map" using the map options          
-map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    //load the map options
+    var mapOptions = {
+        center: pdxCoords,
+        zoom: mapZoomLevel			
+    };
+
+    //creates the map in the div"map" using the map options          
+    map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 
 
-//loop to create  the vehicles
-for (i = 0; i < vehicles.length; i++) { 
-
-    //create latlng
-  let longlatTemp = vehicles[i][2];     
-    //creating title. 
-  let signMessageForThisMarker = vehicles[i][4] + "";
-  let tempDirection = vehicles[i][5];
-  let vehicleNum = "" + (vehicles[i][3]);
-  let vehicleNumNum = vehicles[i][3];
-  let vehicleIDID = vehicles[i][6];
-  let vehicleDelay = vehicles[i][7];
+    //loop to create  the vehicles
+    for (var i = 0, iLength = vehicles.length; i < iLength; i++) { 
+        
+        let iCurrentVehicle = vehicles[i];
+        let vehiclePosition = iCurrentVehicle[2];     
+        let signMessageForThisMarker = iCurrentVehicle[4] + "";
+        let tempDirection = iCurrentVehicle[5];
+        let vehicleNum = "" + (iCurrentVehicle[3]);
+        let vehicleNumNum = iCurrentVehicle[3];
+        let vehicleIDID = iCurrentVehicle[6];
+        let vehicleDelay = iCurrentVehicle[7];
        
-    //var icon = '../Portland-Trimet-Live-Map/images/' + vehicleNumNum + '-' + (tempDirection ? 'g' : 'b') + '.png';
+        //var icon = '../Portland-Trimet-Live-Map/images/' + vehicleNumNum + '-' + (tempDirection ? 'g' : 'b') + '.png';
+
+        // SET FILL COLOR BASED ON VEHICLE AND DIRECTION
+        var fillColor;
+        var strokeColor = tempDirection ? '#ffffff' : '#000000' ;
+        switch (vehicleNumNum){
+            case 90:
+                //red
+                fillColor = tempDirection ? '#F44336' : '#F44336';
+                break;
+            case 100:   
+                //blue
+                fillColor = tempDirection ? '#2196F3' : '#2196F3';
+                break;
+            case 190:
+                //yellow
+                fillColor = tempDirection ? '#FFEB3B' : '#FFEB3B';
+                break;
+            case 200:
+                //green
+                fillColor = tempDirection ? '#4CAF50' : '#4CAF50';
+                break;
+            case 290:
+                //orange
+                fillColor = tempDirection ? '#FF9800' : '#FF9800';
+                break;
+            default:
+                //bus
+                fillColor = tempDirection ? '#607D8B' : '#607D8B';
+                break;
+        }
     
-    // SET FILL COLOR BASED ON VEHICLE AND DIRECTION
-    var fillColor;
-    var strokeColor = tempDirection ? '#ffffff' : '#000000' ;
-    switch (vehicleNumNum){
-                case 90:
-                    //red
-                    fillColor = tempDirection ? '#F44336' : '#F44336';
-                    break;
-                case 100:   
-                    //blue
-                    fillColor = tempDirection ? '#2196F3' : '#2196F3';
-                    break;
-                case 190:
-                    //yellow
-                    fillColor = tempDirection ? '#FFEB3B' : '#FFEB3B';
-                    break;
-                case 200:
-                    //green
-                    fillColor = tempDirection ? '#4CAF50' : '#4CAF50';
-                    break;
-                case 290:
-                    //orange
-                    fillColor = tempDirection ? '#FF9800' : '#FF9800';
-                    break;
-                default:
-                    //bus
-                    fillColor = tempDirection ? '#607D8B' : '#607D8B';
-                    break;
-            }
-    
-         var icon = {
+        var icon = {
             path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
             fillColor: fillColor,
             fillOpacity: .6,
@@ -132,114 +138,110 @@ for (i = 0; i < vehicles.length; i++) {
             scale: .5,
             text: "57"
         }
-    
-    /** STILL A WORK IN PROGRESS
-    //tests if img doesn't exist. If it doesn't, use SVG instead.
-    $.get(icon).fail(function() {
-        icon = {
-            path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
-            fillColor: (tempDirection ? '#FF0000' : '#ff8000'),
-            fillOpacity: .6,
-            strokeWeight: 1,
-            scale: .5,
-            text: "57"
-        }
-    });
-    **/
-    
-	markers[i] = new google.maps.Marker({
-  	position: longlatTemp,
-    map: map,
-    icon: icon,
-    title: vehicleNum,
-    busNum: vehicleNumNum,
-    uniqueID: vehicleIDID
-        //title: titleTemp
-  });
 
-    //activate so that no markers show up initially
-    //markers[i].setMap(null);
-    
-  markers[i].index = i;
-  contents[i] = '<div class="popup_container">' + signMessageForThisMarker + '<br>' + ( vehicleDelay > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicleDelay) + ' seconds. </div>';
-
-	
-  infowindows[i] = new google.maps.InfoWindow({
-    content: contents[i],
-    maxWidth: 300
-  });
-
-  google.maps.event.addListener(markers[i], 'click', function() {
-		console.log(this.index); // this will give correct index
-		console.log(i); //this will always give 10 for you
-    infowindows[this.index].open(map,markers[this.index]);
-    map.panTo(markers[this.index].getPosition());
-  });  
-}
-
-console.log(markers);
-console.log("Markers title", markers[0]["title"])
-
-
-    // creating checkboxes dynamically. Huh, it actually works. Cool.
-   
-for (let ch = 0; ch < 291; ch++){
-    for (let ve = 0; ve < vehicles.length; ve++){
-        if ( ch == vehicles[ve][3]){
-            
-            let tempvariable = vehicles[ve][3];
-            
-            checkboxes[ch] = document.createElement('input');
-            checkboxes[ch].id = "bus" + vehicles[ve][3];
-            //checkboxes[ch].onclick = ("addRemoveBus(" + vehicles[ve][3] + ")");
-            //checkboxes[ch].onclick = "addRemoveBus(57)";
-            checkboxes[ch].value = vehicles[ve][3];
-            checkboxes[ch].type = "checkbox";
-            checkboxes[ch].checked = "checked";
-            checkboxes[ch].name = "bus" + vehicles[ve][3];
-
-            checkboxes[ch].addEventListener('click', function(){
-                addRemoveBus(tempvariable);
-            })
-            
-            let label = document.createElement('label')
-            label.htmlFor = "bus" + vehicles[ve][3];
-            
-            var node;
-            switch (vehicles[ve][3]){
-                case 90:
-                    label.appendChild(document.createTextNode("Red Line" + "\u00A0")); 
-                    node = document.getElementById("railButtonsHere");
-                    break;
-                case 100:                   
-                    label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));  
-                    node = document.getElementById("railButtonsHere");
-                    break;
-                case 190:
-                    label.appendChild(document.createTextNode("Yellow Line" + "\u00A0"));
-                    node = document.getElementById("railButtonsHere");
-                    break;
-                case 200:
-                    label.appendChild(document.createTextNode("Green Line" + "\u00A0"));
-                    node = document.getElementById("railButtonsHere");
-                    break;
-                case 290:
-                    label.appendChild(document.createTextNode("Orange Line" + "\u00A0"));
-                    node = document.getElementById("railButtonsHere");
-                    break;
-                default:
-                    label.appendChild(document.createTextNode("" + vehicles[ve][3] + "\u00A0"));
-                    node = document.getElementById("buttonsHere");
-                    break;
+        /** STILL A WORK IN PROGRESS
+        //tests if img doesn't exist. If it doesn't, use SVG instead.
+        $.get(icon).fail(function() {
+            icon = {
+                path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
+                fillColor: (tempDirection ? '#FF0000' : '#ff8000'),
+                fillOpacity: .6,
+                strokeWeight: 1,
+                scale: .5,
+                text: "57"
             }
-            
-            node.appendChild(checkboxes[ch]);
-            node.appendChild(label);
-            //exits the second for loop so we don't get multiple checkboxes for the same bus route
-            break;
-        }
-    }    
-}
+        });
+        **/
+    
+        markers[i] = new google.maps.Marker({
+            position: vehiclePosition,
+            map: map,
+            icon: icon,
+            title: vehicleNum,
+            busNum: vehicleNumNum,
+            uniqueID: vehicleIDID
+            //title: titleTemp
+        });
+
+        //activate so that no markers show up initially
+        //markers[i].setMap(null);
+
+        markers[i].index = i;
+        contents[i] = '<div class="popup_container">' + signMessageForThisMarker + '<br>' + ( vehicleDelay > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicleDelay) + ' seconds. </div>';
+
+
+        infowindows[i] = new google.maps.InfoWindow({
+            content: contents[i],
+            maxWidth: 300
+        });
+
+        google.maps.event.addListener(markers[i], 'click', function() {
+            console.log(this.index); // this will give correct index
+            console.log(i); //this will always give 10 for you
+            infowindows[this.index].open(map,markers[this.index]);
+            map.panTo(markers[this.index].getPosition());
+        });  
+    }
+
+    console.log(markers);
+
+    // creating checkboxes dynamically.
+
+    for (let ch = 0; ch < 291; ch++){
+        for (let ve = 0, veLength = vehicles.length; ve < veLength; ve++){
+
+            let veRouteNum = vehicles[ve][3];
+            if ( ch == veRouteNum){
+
+                checkboxes[ch] = document.createElement('input');
+                checkboxes[ch].id = "bus" + veRouteNum;
+                checkboxes[ch].value = veRouteNum;
+                checkboxes[ch].type = "checkbox";
+                checkboxes[ch].checked = "checked";
+                checkboxes[ch].name = "bus" + veRouteNum;
+
+                checkboxes[ch].addEventListener('click', function(){
+                    addRemoveBus(veRouteNum);
+                })
+
+                let label = document.createElement('label');
+                label.htmlFor = "bus" + veRouteNum;
+
+                var node;
+                switch (veRouteNum){
+                    case 90:
+                        label.appendChild(document.createTextNode("Red Line" + "\u00A0")); 
+                        node = document.getElementById("railButtonsHere");
+                        break;
+                    case 100:                   
+                        label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));  
+                        node = document.getElementById("railButtonsHere");
+                        break;
+                    case 190:
+                        label.appendChild(document.createTextNode("Yellow Line" + "\u00A0"));
+                        node = document.getElementById("railButtonsHere");
+                        break;
+                    case 200:
+                        label.appendChild(document.createTextNode("Green Line" + "\u00A0"));
+                        node = document.getElementById("railButtonsHere");
+                        break;
+                    case 290:
+                        label.appendChild(document.createTextNode("Orange Line" + "\u00A0"));
+                        node = document.getElementById("railButtonsHere");
+                        break;
+                    default:
+                        label.appendChild(document.createTextNode("" + vehicles[ve][3] + "\u00A0"));
+                        node = document.getElementById("buttonsHere");
+                        break;
+                }
+
+                node.appendChild(checkboxes[ch]);
+                node.appendChild(label);
+                //exits the second for loop so we don't get multiple checkboxes for the same bus route
+                break;
+            }
+        }    
+    }
     
     
     
@@ -257,24 +259,27 @@ setInterval(function updateLocation() {
     
     $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B', function(webData) {
     trimetData = webData;
-        
+              
         for (key in trimetData.resultSet.vehicle){
-            for (var c = 0; c < vehicles.length; c++){
-                if (trimetData.resultSet.vehicle[key]["vehicleID"] == vehicles[c][6]){
-                    for ( var d = 0; d < markers.length; d++) {
-                        if (markers[d]["uniqueID"] == vehicles[c][6]){
+            for (var c = 0, cLength = vehicles.length; c < cLength; c++){
+                let newTrimetData = trimetData.resultSet.vehicle[key];
+                let currentVehicle = vehicles[c];
+                if (newTrimetData["vehicleID"] == currentVehicle[6]){
+                    for ( var d = 0, dLength = markers.length; d < dLength; d++) {
+                        if (markers[d]["uniqueID"] == currentVehicle[6]){
                             
-                            var tempLatF = trimetData["resultSet"].vehicle[key].latitude;
-                            var tempLongF = trimetData["resultSet"].vehicle[key].longitude;
+                          
+                            var tempLatF = newTrimetData.latitude;
+                            var tempLongF = newTrimetData.longitude;
                             var tempLatLongF = new google.maps.LatLng(tempLatF, tempLongF);
                             vehicles[c][0] = tempLatF;
                             vehicles[c][1] = tempLongF;
                             vehicles[c][2] = tempLatLongF;
-                            vehicles[c][3] = trimetData["resultSet"].vehicle[key].routeNumber;
-                            vehicles[c][4] = trimetData["resultSet"].vehicle[key].signMessage;
-                            vehicles[c][5] = trimetData["resultSet"].vehicle[key].direction;
-                            vehicles[c][6] = trimetData["resultSet"].vehicle[key].vehicleID;
-                            vehicles[c][7] = trimetData["resultSet"].vehicle[key].delay;
+                            vehicles[c][3] = newTrimetData.routeNumber;
+                            vehicles[c][4] = newTrimetData.signMessage;
+                            vehicles[c][5] = newTrimetData.direction;
+                            vehicles[c][6] = newTrimetData.vehicleID;
+                            vehicles[c][7] = newTrimetData.delay;
                             
                             markers[d].setPosition(tempLatLongF);
                             
@@ -303,7 +308,7 @@ setInterval(function updateLocation() {
 // THIS IS THE FUNCTION THAT ADDS OR REMOVES ALL BUS/RAIL. MUCH QUICKER THAN THE LOOP I HAD BEFORE
 function addRemoveAll(domElement, isBus){
     if (document.getElementById(domElement).checked) {     
-        for (let bb = 0; bb < markers.length; bb++){
+        for (let bb = 0, bbLength = markers.length; bb < bbLength; bb++){
             let markerNum = markers[bb]["busNum"];
             if (isBus){
                 if (markerNum != 90 && markerNum != 100 && markerNum != 190 && markerNum != 200 && markerNum !=290){
@@ -316,7 +321,7 @@ function addRemoveAll(domElement, isBus){
             }  
         }
     } else {
-        for (let bb = 0; bb < markers.length; bb++){
+        for (let bb = 0, bbLength = markers.length; bb < bbLength; bb++){
             let markerNum = markers[bb]["busNum"];
             if (isBus){
                 if (markerNum != 90 && markerNum != 100 && markerNum != 190 && markerNum != 200 && markerNum != 290){
@@ -347,7 +352,7 @@ function addRemoveBus(busRoute){
 
 //THIS FUNCTION CLEARS INDIVIDUAL MARKERS BY LOOPING THROUGH THE ARRAY
 function clearMarkers(routeToClear) {
-    for (let a = 0; a < markers.length; a++){
+    for (let a = 0, aLength = markers.length; a < aLength; a++){
         if (markers[a]["busNum"] == routeToClear){
             markers[a].setMap(null);
             //setMapOnAll(null);
@@ -357,9 +362,8 @@ function clearMarkers(routeToClear) {
 
 //THIS FUNCTION SHOWS INDIVIDUAL MARKERS BY LOOPING THROUGH THE ARRAY
 function showMarkers(routeToAdd) {
-    for (var b = 0; b < markers.length; b++){
+    for (var b = 0, bLength = markers.length; b < bLength; b++){
         if (markers[b]["busNum"] == routeToAdd){
-            console.log("Marker Added: ", markers[b][3]);
             markers[b].setMap(map);
             //setMapOnAll(null);
         } 
