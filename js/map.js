@@ -29,6 +29,10 @@ xxxDONExxx
 Utilize cached values for loop optimization
 
 
+6) 
+
+Use a document fragment to add all DOM checkbox elements at the same time
+
 **/
 
 
@@ -186,6 +190,141 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
     console.log(markers);
 
     // creating checkboxes dynamically.
+    /**
+    Create dynamic bootrap useable grid system for boxes:
+    
+    <div class="row">
+  <div class="col-sm-3"></div>
+  <div class="col-sm-3"></div>
+  <div class="col-sm-3"></div>
+  <div class="col-sm-3"></div>
+</div>
+    
+    
+    **/
+    
+    var veRouteNum,
+        busFragment = document.createDocumentFragment(),
+        railFragment = document.createDocumentFragment(),
+        label,
+        node,
+        bootstrapItemNumber = 1,
+        fourCounter = 1;
+    
+   
+    /**
+    ATTEMPT TO REDO CHECKBOXES LEADS TO PAIN. 
+    
+    for (let ch = 0; ch < 291; ch++){
+        for (let ve = 0, veLength = vehicles.length; ve < veLength; ve++){
+            veRouteNum = vehicles[ve][3];
+            if ( ch == veRouteNum){
+                
+                
+                checkboxes[ch] = document.createElement('input');
+                checkboxes[ch].id = "bus" + veRouteNum;
+                checkboxes[ch].value = veRouteNum;
+                checkboxes[ch].type = "checkbox";
+                checkboxes[ch].checked = "checked";
+                checkboxes[ch].name = "bus" + veRouteNum;
+                checkboxes[ch].addEventListener('click', function(){
+                    addRemoveBus(veRouteNum);
+                })
+                
+                label = document.createElement('label');
+                label.htmlFor = "bus" + veRouteNum;
+
+                switch (veRouteNum){
+                    case 90:
+                        label.appendChild(document.createTextNode("Red Line" + "\u00A0")); 
+                        railFragment.appendChild(checkboxes[ch]);
+                        railFragment.appendChild(label);
+                        railFragment.appendChild(document.createElement('br'));
+                        break;
+                    case 100:                   
+                        label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));  
+                        railFragment.appendChild(checkboxes[ch]);
+                        railFragment.appendChild(label);
+                        railFragment.appendChild(document.createElement('br'));
+                        break;
+                    case 190:
+                        label.appendChild(document.createTextNode("Yellow Line" + "\u00A0"));
+                        railFragment.appendChild(checkboxes[ch]);
+                        railFragment.appendChild(label);
+                        railFragment.appendChild(document.createElement('br'));
+                        break;
+                    case 200:
+                        label.appendChild(document.createTextNode("Green Line" + "\u00A0"));
+                        railFragment.appendChild(checkboxes[ch]);
+                        railFragment.appendChild(label);
+                        railFragment.appendChild(document.createElement('br'));
+                        break;
+                    case 290:
+                        label.appendChild(document.createTextNode("Orange Line" + "\u00A0"));
+                        railFragment.appendChild(checkboxes[ch]);
+                        railFragment.appendChild(label);
+                        railFragment.appendChild(document.createElement('br'));
+                        break;
+                    default:
+                             
+                        var colTag = document.createElement('div');
+                        colTag.className = "col-sm-3";
+
+                        label.appendChild(document.createTextNode(veRouteNum));
+                        colTag.appendChild(checkboxes[ch]);
+                        colTag.appendChild(label);
+                       
+                        switch (fourCounter){
+                            case 1:
+                            case 2:
+                            case 3:
+                                var colCurrent = document.getElementById("r" + bootstrapItemNumber);
+                                console.log('colcur', colCurrent);
+                                colCurrent.appendChild(colTag);
+                                fourCounter++;
+                                break;
+                            case 4:
+                                var colCurrent = document.getElementById("r" + bootstrapItemNumber);
+                                console.log('colcur', colCurrent);
+                                colCurrent.appendChild(colTag);
+
+                                fourCounter = 1;
+                                bootstrapItemNumber++;
+                                break;
+                        }
+                        
+                        
+
+                        if (bootstrapItemNumber <= 4){
+                            
+                            //bootstrapItemNumber++;
+                        }
+                        //busFragment.appendChild(colCurrent);
+                        
+                        //console.log("busfrag",busFragment);
+                        
+                        break;
+                }
+                
+
+
+                //exits the second for loop so we don't get multiple checkboxes for the same bus route
+                break;
+            }
+        }    
+    }
+    node = document.getElementById("railButtonsHere");
+    node.appendChild(railFragment);
+    node2 = document.getElementById("buttonsHere");
+    node2.appendChild(busFragment);
+    
+    **/
+   
+
+    
+    
+    
+    // creating checkboxes dynamically.
 
     for (let ch = 0; ch < 291; ch++){
         for (let ve = 0, veLength = vehicles.length; ve < veLength; ve++){
@@ -248,7 +387,11 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
 });
 
 
+//checkboxes = element
+//label = label
+//node -> website
 
+//node -> checkboxes -> label
 
 
 
