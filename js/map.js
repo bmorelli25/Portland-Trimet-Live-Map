@@ -28,6 +28,18 @@ if (trains.indexOf(testValue) >= 0){
 xxxDONExxx
 Utilize cached values for loop optimization
 
+6)
+
+Utilize array destructuring to assign multiple values from an array to local variables:
+Example:
+let users = ["Sam", "tyler", "brook"];
+let [a,b,c] = users;
+console.log(a) = "Sam"
+
+values can also be discarded: let [a,,b] would discard middle value.
+Can also use rest variables: let [first, ...rest]; console.log(first, rest) = Sam["Tyler", "Brook"]
+
+
 
 6) 
 
