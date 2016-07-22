@@ -1,0 +1,24 @@
+{
+  "name": "portland-trimet-live-map",
+  "version": "1.0.0",
+  "description": "PDX TRIMET MAP",
+  "main": "server.js",
+  "dependencies": {
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bmorelli25/Portland-Trimet-Live-Map.git"
+  },
+  "author": "Brandon Morelli",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bmorelli25/Portland-Trimet-Live-Map/issues"
+  },
+  "homepage": "https://github.com/bmorelli25/Portland-Trimet-Live-Map#readme"
+}

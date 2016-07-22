@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 /**
 POTENTIAL UPGRADES:
 
@@ -24,7 +26,7 @@ if (trains.indexOf(testValue) >= 0){
 }
 
 
-5) 
+5)
 xxxDONExxx
 Utilize cached values for loop optimization
 
@@ -41,7 +43,7 @@ Can also use rest variables: let [first, ...rest]; console.log(first, rest) = Sa
 
 
 
-6) 
+6)
 
 Use a document fragment to add all DOM checkbox elements at the same time
 
@@ -64,18 +66,15 @@ var checkboxes = [];
 //get JSON from Trimet.com
 var trimetData;
 $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B', function(webData) {
-    trimetData = webData;
-      console.log("trimetdata: ", trimetData);
-
+    trimetData = webData["resultSet"];
 
 //var icon = 'http://i.imgur.com/imuR74T.png'; - 40px .png
 //var icon = 'http://i.imgur.com/SHyzGIk.png'; - 20px .png
 
-
 //creates the vehicles array from the JSON dataset 'currently above'
-    for (var i = 0, iLength = trimetData["resultSet"]["vehicle"].length; i < iLength; i++) {
-        let iCurrentVehicle = trimetData["resultSet"].vehicle[i];
-        
+    for (var i = 0, iLength = trimetData["vehicle"].length; i < iLength; i++) {
+        let iCurrentVehicle = trimetData.vehicle[i];
+
         var long = iCurrentVehicle.longitude;
         var lat = iCurrentVehicle.latitude;
         var latlngTemp = new google.maps.LatLng(lat, long);
@@ -86,32 +85,33 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
         var delayV = iCurrentVehicle.delay;
             vehicles.push([lat,long,latlngTemp,routeNum,signMessage,busDirection,vehicleID,delayV]);
     }
+
     //logs vehicle array for testing
     console.log("Vehicle Array ", vehicles);
 
     //load the map options
     var mapOptions = {
         center: pdxCoords,
-        zoom: mapZoomLevel			
+        zoom: mapZoomLevel
     };
 
-    //creates the map in the div"map" using the map options          
+    //creates the map in the div"map" using the map options
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 
 
     //loop to create  the vehicles
-    for (var i = 0, iLength = vehicles.length; i < iLength; i++) { 
-        
+    for (var i = 0, iLength = vehicles.length; i < iLength; i++) {
+
         let iCurrentVehicle = vehicles[i];
-        let vehiclePosition = iCurrentVehicle[2];     
+        let vehiclePosition = iCurrentVehicle[2];
         let signMessageForThisMarker = iCurrentVehicle[4] + "";
         let tempDirection = iCurrentVehicle[5];
         let vehicleNum = "" + (iCurrentVehicle[3]);
         let vehicleNumNum = iCurrentVehicle[3];
         let vehicleIDID = iCurrentVehicle[6];
         let vehicleDelay = iCurrentVehicle[7];
-       
+
         //var icon = '../Portland-Trimet-Live-Map/images/' + vehicleNumNum + '-' + (tempDirection ? 'g' : 'b') + '.png';
 
         // SET FILL COLOR BASED ON VEHICLE AND DIRECTION
@@ -122,7 +122,7 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                 //red
                 fillColor = tempDirection ? '#F44336' : '#F44336';
                 break;
-            case 100:   
+            case 100:
                 //blue
                 fillColor = tempDirection ? '#2196F3' : '#2196F3';
                 break;
@@ -143,7 +143,7 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                 fillColor = tempDirection ? '#607D8B' : '#607D8B';
                 break;
         }
-    
+
         var icon = {
             path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
             fillColor: fillColor,
@@ -168,7 +168,7 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
             }
         });
         **/
-    
+
         markers[i] = new google.maps.Marker({
             position: vehiclePosition,
             map: map,
@@ -196,7 +196,7 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
             console.log(i); //this will always give 10 for you
             infowindows[this.index].open(map,markers[this.index]);
             map.panTo(markers[this.index].getPosition());
-        });  
+        });
     }
 
     console.log(markers);
@@ -204,17 +204,17 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
     // creating checkboxes dynamically.
     /**
     Create dynamic bootrap useable grid system for boxes:
-    
+
     <div class="row">
   <div class="col-sm-3"></div>
   <div class="col-sm-3"></div>
   <div class="col-sm-3"></div>
   <div class="col-sm-3"></div>
 </div>
-    
-    
+
+
     **/
-    
+
     var veRouteNum,
         busFragment = document.createDocumentFragment(),
         railFragment = document.createDocumentFragment(),
@@ -222,17 +222,17 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
         node,
         bootstrapItemNumber = 1,
         fourCounter = 1;
-    
-   
+
+
     /**
-    ATTEMPT TO REDO CHECKBOXES LEADS TO PAIN. 
-    
+    ATTEMPT TO REDO CHECKBOXES LEADS TO PAIN.
+
     for (let ch = 0; ch < 291; ch++){
         for (let ve = 0, veLength = vehicles.length; ve < veLength; ve++){
             veRouteNum = vehicles[ve][3];
             if ( ch == veRouteNum){
-                
-                
+
+
                 checkboxes[ch] = document.createElement('input');
                 checkboxes[ch].id = "bus" + veRouteNum;
                 checkboxes[ch].value = veRouteNum;
@@ -242,19 +242,19 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                 checkboxes[ch].addEventListener('click', function(){
                     addRemoveBus(veRouteNum);
                 })
-                
+
                 label = document.createElement('label');
                 label.htmlFor = "bus" + veRouteNum;
 
                 switch (veRouteNum){
                     case 90:
-                        label.appendChild(document.createTextNode("Red Line" + "\u00A0")); 
+                        label.appendChild(document.createTextNode("Red Line" + "\u00A0"));
                         railFragment.appendChild(checkboxes[ch]);
                         railFragment.appendChild(label);
                         railFragment.appendChild(document.createElement('br'));
                         break;
-                    case 100:                   
-                        label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));  
+                    case 100:
+                        label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));
                         railFragment.appendChild(checkboxes[ch]);
                         railFragment.appendChild(label);
                         railFragment.appendChild(document.createElement('br'));
@@ -278,14 +278,14 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                         railFragment.appendChild(document.createElement('br'));
                         break;
                     default:
-                             
+
                         var colTag = document.createElement('div');
                         colTag.className = "col-sm-3";
 
                         label.appendChild(document.createTextNode(veRouteNum));
                         colTag.appendChild(checkboxes[ch]);
                         colTag.appendChild(label);
-                       
+
                         switch (fourCounter){
                             case 1:
                             case 2:
@@ -304,38 +304,38 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                                 bootstrapItemNumber++;
                                 break;
                         }
-                        
-                        
+
+
 
                         if (bootstrapItemNumber <= 4){
-                            
+
                             //bootstrapItemNumber++;
                         }
                         //busFragment.appendChild(colCurrent);
-                        
+
                         //console.log("busfrag",busFragment);
-                        
+
                         break;
                 }
-                
+
 
 
                 //exits the second for loop so we don't get multiple checkboxes for the same bus route
                 break;
             }
-        }    
+        }
     }
     node = document.getElementById("railButtonsHere");
     node.appendChild(railFragment);
     node2 = document.getElementById("buttonsHere");
     node2.appendChild(busFragment);
-    
-    **/
-   
 
-    
-    
-    
+    **/
+
+
+
+
+
     // creating checkboxes dynamically.
 
     for (let ch = 0; ch < 291; ch++){
@@ -361,11 +361,11 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                 var node;
                 switch (veRouteNum){
                     case 90:
-                        label.appendChild(document.createTextNode("Red Line" + "\u00A0")); 
+                        label.appendChild(document.createTextNode("Red Line" + "\u00A0"));
                         node = document.getElementById("railButtonsHere");
                         break;
-                    case 100:                   
-                        label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));  
+                    case 100:
+                        label.appendChild(document.createTextNode("Blue Line" + "\u00A0"));
                         node = document.getElementById("railButtonsHere");
                         break;
                     case 190:
@@ -391,11 +391,11 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
                 //exits the second for loop so we don't get multiple checkboxes for the same bus route
                 break;
             }
-        }    
+        }
     }
-    
-    
-    
+
+
+
 });
 
 
@@ -411,10 +411,10 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
 var timeCounter = 1;
 
 setInterval(function updateLocation() {
-    
+
     $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B', function(webData) {
     trimetData = webData;
-              
+
         for (key in trimetData.resultSet.vehicle){
             for (var c = 0, cLength = vehicles.length; c < cLength; c++){
                 let newTrimetData = trimetData.resultSet.vehicle[key];
@@ -422,8 +422,8 @@ setInterval(function updateLocation() {
                 if (newTrimetData["vehicleID"] == currentVehicle[6]){
                     for ( var d = 0, dLength = markers.length; d < dLength; d++) {
                         if (markers[d]["uniqueID"] == currentVehicle[6]){
-                            
-                          
+
+
                             var tempLatF = newTrimetData.latitude;
                             var tempLongF = newTrimetData.longitude;
                             var tempLatLongF = new google.maps.LatLng(tempLatF, tempLongF);
@@ -435,24 +435,24 @@ setInterval(function updateLocation() {
                             vehicles[c][5] = newTrimetData.direction;
                             vehicles[c][6] = newTrimetData.vehicleID;
                             vehicles[c][7] = newTrimetData.delay;
-                            
+
                             markers[d].setPosition(tempLatLongF);
-                            
-                            //doesn't work - contents isn't updated. 
+
+                            //doesn't work - contents isn't updated.
                             //contents[d] = '<div class="popup_container">' + vehicles[c][4] + '<br>' + ( vehicles[c][7] > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicles[c][7]) + ' seconds. </div>';
-                            
+
                         }
-                    }  
-                }   
+                    }
+                }
             }
         }
-    });  
+    });
 }, 5000);
 
 // THESE TWO FUNCTIONS WATCH FOR CLICKS ON THE MASTER CHECKBOX AND RUN 'addRemoveAll' IF THEY ARE CLICKED
  $("#checkAllBus").click(function () {
      $('#buttonsHere input:checkbox').not(this).prop('checked', this.checked);
-     addRemoveAll("checkAllBus", true); 
+     addRemoveAll("checkAllBus", true);
  });
 
  $("#checkAllRail").click(function () {
@@ -462,18 +462,18 @@ setInterval(function updateLocation() {
 
 // THIS IS THE FUNCTION THAT ADDS OR REMOVES ALL BUS/RAIL. MUCH QUICKER THAN THE LOOP I HAD BEFORE
 function addRemoveAll(domElement, isBus){
-    if (document.getElementById(domElement).checked) {     
+    if (document.getElementById(domElement).checked) {
         for (let bb = 0, bbLength = markers.length; bb < bbLength; bb++){
             let markerNum = markers[bb]["busNum"];
             if (isBus){
                 if (markerNum != 90 && markerNum != 100 && markerNum != 190 && markerNum != 200 && markerNum !=290){
                 markers[bb].setMap(map);
-                } 
+                }
             } else {
                 if (markerNum == 90 || markerNum == 100 || markerNum == 190 || markerNum == 200 || markerNum ==290){
                 markers[bb].setMap(map);
                 }
-            }  
+            }
         }
     } else {
         for (let bb = 0, bbLength = markers.length; bb < bbLength; bb++){
@@ -481,14 +481,14 @@ function addRemoveAll(domElement, isBus){
             if (isBus){
                 if (markerNum != 90 && markerNum != 100 && markerNum != 190 && markerNum != 200 && markerNum != 290){
                 markers[bb].setMap(null);
-                } 
+                }
             } else {
                 if (markerNum == 90 || markerNum == 100 || markerNum == 190 || markerNum == 200 || markerNum == 290){
                 markers[bb].setMap(null);
-                } 
-            } 
+                }
+            }
         }
-    }  
+    }
 }
 
 //THIS FUNCTION IS CALLED WHEN A SINGULAR ROUTE IS CHECKED OR UNCHECKED. IT THEN CALLS 'clearMarkers' or 'showMarkers'
@@ -511,7 +511,7 @@ function clearMarkers(routeToClear) {
         if (markers[a]["busNum"] == routeToClear){
             markers[a].setMap(null);
             //setMapOnAll(null);
-        } 
+        }
     }
 }
 
@@ -521,7 +521,7 @@ function showMarkers(routeToAdd) {
         if (markers[b]["busNum"] == routeToAdd){
             markers[b].setMap(map);
             //setMapOnAll(null);
-        } 
+        }
         //setMapOnAll(map);
     }
 }
@@ -554,7 +554,7 @@ $('input:checkbox').change(
 
 /**
 for (var ch = 0; ch < vehicles.length; ch++){
-    
+
     checkboxes[ch] = document.createElement('input');
     checkboxes[ch].id = "bus" + vehicles[ch][3];
     checkboxes[ch].onclick = "addRemoveBus(" + vehicles[ch][3] + ")";
@@ -568,21 +568,21 @@ for (var ch = 0; ch < vehicles.length; ch++){
 
     container.appendChild(checkboxes[ch]);
     container.appendChild(label);
-    
-    
+
+
 }
 
 **/
 
 
 
-/** 
+/**
 // This will rinse and repeat every 5 seconds
 setInterval(function() {
         position = new google.maps.LatLng(purple[i][1], purple[i][2]);
         marker.setPosition(position);
-    }, 5000); 
-**/ 
+    }, 5000);
+**/
 
 /** attempting to close infowindows
 google.maps.event.addListener(map, 'click', function() {
@@ -590,4 +590,4 @@ google.maps.event.addListener(map, 'click', function() {
         infowindows[j].close();
     }
   });
-**/  
+**/
