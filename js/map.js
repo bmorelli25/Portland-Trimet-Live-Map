@@ -16,6 +16,7 @@ map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 //get JSON from Trimet.com
 $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B', function(trimetData) {
+let vehicleData = trimetData.resultSet.vehicle;
 
   //Create Vehicle Class
   let Vehicle = function(bus){
@@ -27,6 +28,7 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
     this.id = bus.vehicleID; //vehicleID
     this.delay = bus.delay; //delayV
     this.type = bus.type; // rail or bus
+    this.marker = null; //marker placeholder
   };
 
   Vehicle.prototype = {
@@ -68,7 +70,7 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
         };
       },
       createMarker: function(){
-        let marker = new google.maps.Marker({
+        this.marker = new google.maps.Marker({
           position: this.createLatLng(),
           map: map,
           icon: this.createIcon(),
@@ -92,16 +94,16 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
           maxWidth: 300
         });
 
-        marker.addListener('click', function() {
+        this.marker.addListener('click', function() {
           infowindow.open(map, marker);
         });
       }
     };
 
-  trimetData.resultSet.vehicle.forEach(function(busData){
-    if(busData.nextStopSeq === null) return;
+  vehicleData.forEach(function(vd){
+    if(vd.vehicleID === null) return;
 
-    let bus = new Vehicle(busData);
+    let bus = new Vehicle(vd);
     busArray.push(bus);
     bus.createMarker();
   });
@@ -109,46 +111,29 @@ $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C9
   console.log(busArray);
 });
 
-// old updating function.
-// need to refactor
-// setInterval(function updateLocation() {
-//     $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B', function(webData) {
-//     trimetData = webData;
-//
-//         for (key in trimetData.resultSet.vehicle){
-//             for (var c = 0, cLength = vehicles.length; c < cLength; c++){
-//                 let newTrimetData = trimetData.resultSet.vehicle[key];
-//                 let currentVehicle = vehicles[c];
-//                 if (newTrimetData["vehicleID"] == currentVehicle[6]){
-//                     for ( var d = 0, dLength = markers.length; d < dLength; d++) {
-//                         if (markers[d]["uniqueID"] == currentVehicle[6]){
-//
-//
-//                             var tempLatF = newTrimetData.latitude;
-//                             var tempLongF = newTrimetData.longitude;
-//                             var tempLatLongF = new google.maps.LatLng(tempLatF, tempLongF);
-//                             vehicles[c][0] = tempLatF;
-//                             vehicles[c][1] = tempLongF;
-//                             vehicles[c][2] = tempLatLongF;
-//                             vehicles[c][3] = newTrimetData.routeNumber;
-//                             vehicles[c][4] = newTrimetData.signMessage;
-//                             vehicles[c][5] = newTrimetData.direction;
-//                             vehicles[c][6] = newTrimetData.vehicleID;
-//                             vehicles[c][7] = newTrimetData.delay;
-//
-//                             markers[d].setPosition(tempLatLongF);
-//
-//                             //doesn't work - contents isn't updated.
-//                             //contents[d] = '<div class="popup_container">' + vehicles[c][4] + '<br>' + ( vehicles[c][7] > 0 ? 'Ahead of schedule by ' : 'Behind schedule by ') + Math.abs(vehicles[c][7]) + ' seconds. </div>';
-//
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     });
-// }, 5000);
+setInterval(function(){
+  $.getJSON('http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B', function(trimetData) {
+    let vehicleData = trimetData.resultSet.vehicle;
 
+    busArray.forEach(function(bus,i){
+      vehicleData.forEach(function(newBus){
+        if(newBus.vehicleID === bus.id){
+          if(newBus.longitude !== bus.longitude || newBus.latitude !== bus.latitude){
+            busArray[i].longitude = newBus.longitude;
+            busArray[i].latitude = newBus.latitude;
+            busArray[i].routeNum = newBus.routeNumber;
+            busArray[i].title = newBus.signMessageLong;
+            busArray[i].direction = newBus.direction; //busDirection
+            busArray[i].id = newBus.vehicleID; //vehicleID
+            busArray[i].delay = newBus.delay; //delayV
+            busArray[i].type = newBus.type; // rail or bus
+            busArray[i].marker.setPosition(busArray[i].createLatLng());
+          }
+        }
+      });
+    });
+  });
+}, 5000);
 
 //still need to refactor
 $(window).resize(function () {

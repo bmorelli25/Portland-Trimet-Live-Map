@@ -4,6 +4,9 @@
   "description": "PDX TRIMET MAP",
   "main": "server.js",
   "dependencies": {
+    "express": "^4.15.2",
+    "googleapis": "^18.0.0",
+    "request": "^2.81.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {},
