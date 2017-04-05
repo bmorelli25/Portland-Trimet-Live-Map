@@ -17,32 +17,8 @@ app.use(function(req, res, next) {
   next();
 });
 
-request(URL, function(err, res, body){
-  if(err){
-    console.log('Error fetching data from Trimet: ',err);
-  } else {
-    let vehicles = JSON.parse(body).resultSet.vehicle;
-
-    let Vehicle = function(bus){
-      this.longitude = bus.longitude;
-      this.latitude = bus.latitude;
-      this.routeNum = bus.routeNumber;
-      this.title = bus.signMessageLong;
-      this.direction = bus.direction; //busDirection
-      this.id = bus.vehicleID; //vehicleID
-      this.delay = bus.delay; //delayV
-      this.type = bus.type; // rail or bus
-    };
-
-    vehicles.forEach(function(vehicle){
-      if(vehicle.nextStopSeq === null) return;
-
-      let bus = new Vehicle(vehicle);
-      busArray.push(bus);
-
-    });
-  }
-});
+fetchTriMet();
+setInterval(fetchTriMet, 5000);
 
 app.get('/', function(req,res){
   res.send(busArray);
@@ -52,3 +28,33 @@ app.get('/', function(req,res){
 app.listen(PORT, function() {
   console.log('Express Server is up on port ' + PORT);
 });
+
+
+function fetchTriMet(){
+  request(URL, function(err, res, body){
+    if(err){
+      console.log('Error fetching data from Trimet: ',err);
+    } else {
+      let vehicles = JSON.parse(body).resultSet.vehicle;
+
+      let Vehicle = function(bus){
+        this.longitude = bus.longitude;
+        this.latitude = bus.latitude;
+        this.routeNum = bus.routeNumber;
+        this.title = bus.signMessageLong;
+        this.direction = bus.direction; //busDirection
+        this.id = bus.vehicleID; //vehicleID
+        this.delay = bus.delay; //delayV
+        this.type = bus.type; // rail or bus
+      };
+
+      vehicles.forEach(function(vehicle){
+        if(vehicle.nextStopSeq === null) return;
+        let bus = new Vehicle(vehicle);
+        busArray.push(bus);
+      });
+
+    }
+  });
+
+}
