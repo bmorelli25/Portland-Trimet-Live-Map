@@ -3,7 +3,9 @@ var pdxCoords = new google.maps.LatLng(45.521190, -122.629835)
 var mapZoomLevel = 11;
 
 //Create empty Bus Array:
-let busArray = [];
+let localBusses = [];
+let markers = {};
+let railNumbers = [90,100,190,200,290];
 
 //load the map options
 var mapOptions = {
@@ -14,39 +16,57 @@ var mapOptions = {
 //creates the map in the div"map" using the map options
 map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-$.getJSON('http://localhost:3000', function(trimetData) {
-let vehicleData = trimetData;
+var socket = io.connect('http://localhost:3000/');
 
-  vehicleData.forEach(function(vd){
-    createMarker(vd);
-  //busArray.push(vd);
-  });
+//uses web sockets
+socket.on('initial_data', function(busses){
+  if(busses){
+    busses.forEach(function(bus){
+      localBusses.push(bus);
+      createMarker(bus);
+    });
+  }
+});
+socket.on('busses_moved', function(busses){
+  if(busses.length > 0){
+    busses.forEach(function(bus){
+      localBusses.forEach(function(localBus){
+        if(bus.id !== localBus.id) return;
+        if(bus.longitude !== localBus.longitude || bus.latitude !== localBus.latitude){
+          updateMarker(bus);
+        }
+      });
+    });
+  }
 });
 
-//still need to refactor
-$(window).resize(function () {
-    var h = $(window).height(),
-        offsetTop = 10; // Calculate the top offset
-
-    $('#map').css('height', h-offsetTop);
-}).resize();
+function updateMarker(bus){
+  markers[bus.id].setPosition(new google.maps.LatLng(bus.latitude, bus.longitude));
+}
 
 function createMarker(bus){
-  let marker = new google.maps.Marker({
+  markers[bus.id] = new google.maps.Marker({
     position: function(){ //latlngTemp
       return new google.maps.LatLng(bus.latitude, bus.longitude);
     }(),
+    label: {
+      text: railNumbers.indexOf(bus.routeNum) > -1 ? ' ' : bus.routeNum.toString(),
+      color: 'black',
+      fontFamily: 'Sans-Serif',
+      fontSize: '12px',
+      fontWeight: '800'
+    },
     map: map,
     icon: function(){
       return {
         path: "M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0",
         fillColor: fillColor(bus.routeNum, bus.direction),
-        fillOpacity: 0.6,
+        fillOpacity: 0.8,
         strokeColor: bus.direction ? '#ffffff' : '#000000' ,
         strokeWeight: 2,
-        strokeOpacity: 0.6,
+        strokeOpacity: 0.8,
         scale: 0.5,
-        text: "57"
+        text: ""
       };
     }(),
     title: bus.title,
@@ -69,8 +89,8 @@ function createMarker(bus){
     maxWidth: 300
   });
 
-  marker.addListener('click', function() {
-    infowindow.open(map, marker);
+  markers[bus.id].addListener('click', function() {
+    infowindow.open(map, markers[bus.id]);
   });
 }
 
@@ -90,3 +110,11 @@ function fillColor(routeNum,direction){
       return direction ? '#607D8B' : '#607D8B';
   }
 }
+
+//ensures the google map resizes with the browser
+$(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 30; // Calculate the top offset
+
+    $('#map').css('height', h-offsetTop);
+}).resize();

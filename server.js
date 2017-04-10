@@ -1,10 +1,12 @@
 var express = require('express'),
-    request = require('request');
+    app = express(),
+    request = require('request'),
+    http = require('http').Server(app),
+    io = require('socket.io')(http);
 
-var busArray = [];
-
-var app = express();
+var busses = [];
 const PORT = process.env.PORT || 3000;
+const IP = process.env.IP || '127.0.0.1';
 const URL = 'http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B';
 
 //tell it which folder we want to serve
@@ -17,26 +19,13 @@ app.use(function(req, res, next) {
   next();
 });
 
-fetchTriMet();
-setInterval(fetchTriMet, 5000);
-
-app.get('/', function(req,res){
-  res.send(busArray);
-});
-
-//start the server
-app.listen(PORT, function() {
-  console.log('Express Server is up on port ' + PORT);
-});
-
-
 function fetchTriMet(){
   request(URL, function(err, res, body){
     if(err){
       console.log('Error fetching data from Trimet: ',err);
     } else {
+      let tempArr = [];
       let vehicles = JSON.parse(body).resultSet.vehicle;
-
       let Vehicle = function(bus){
         this.longitude = bus.longitude;
         this.latitude = bus.latitude;
@@ -47,14 +36,31 @@ function fetchTriMet(){
         this.delay = bus.delay; //delayV
         this.type = bus.type; // rail or bus
       };
-
-      vehicles.forEach(function(vehicle){
-        if(vehicle.nextStopSeq === null) return;
-        let bus = new Vehicle(vehicle);
-        busArray.push(bus);
-      });
-
+      if(vehicles.length > 0){
+        for(let i = 0, len = vehicles.length; i < len; i++){
+          if(vehicles[i].nextStopSeq === null) continue;
+          let bus = new Vehicle(vehicles[i]);
+          tempArr.push(bus);
+        }
+      }
+      busses = tempArr.slice();
+      // console.log(busses);
+      io.emit('busses_moved', busses);
     }
   });
-
 }
+setInterval(fetchTriMet, 5000);
+
+app.get('/', function(req,res){
+  res.send(busses);
+});
+
+io.on('connection', function(socket){
+  socket.emit('initial_data', busses);
+  console.log('a user connected');
+});
+
+//start the server
+http.listen(PORT, IP, function() {
+  console.log('Express Server is up on port ' + PORT);
+});
