@@ -1,10 +1,8 @@
 html, body {
     height: 100%;
-}
-
-.box {
-  margin: 0;
-  padding: 0;
+    font-size: 13px;
+    margin: 0;
+    padding: 0;
 }
 
 #map{
@@ -17,9 +15,25 @@ html, body {
   height: 30px;
 }
 
+.header a {
+  color: #fff;
+}
+
 .header p {
   color: #fff;
   font-family: "Roboto","Helvetica Neue",Helvetica,Arial,sans-serif;
-  text-align: center;
   line-height: 30px;
+  margin: 0;
+  display: inline-block;
+  padding: 0px 10px;
+}
+
+#right {
+  float: right;
+}
+
+@media only screen and (max-width: 700px) {
+  #right {
+    display: none;
+  }
 }
