@@ -7,7 +7,7 @@ var express = require('express'),
 let busses = [];
 const PORT = process.env.PORT || 3000;
 const IP = process.env.IP || '0.0.0.0';
-const APPID = process.env.APPID;
+const APPID = process.env.APPID || 'AIzaSyAG0Y98aywmN25ZNVXyakS3r9l9uKDr1YU';
 const URL = `http://developer.trimet.org/ws/v2/vehicles?APPID=${APPID}`;
 
 app.use(express.static('public'));

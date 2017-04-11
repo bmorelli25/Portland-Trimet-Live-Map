@@ -16,7 +16,7 @@ var mapOptions = {
 //creates the map in the div"map" using the map options
 map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-var socket = io.connect();
+var socket = io.connect('https://portland-trimet-live-map.herokuapp.com/');
 
 //uses web sockets
 socket.on('initial_data', function(busses){
