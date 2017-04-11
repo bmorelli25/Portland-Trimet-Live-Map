@@ -1,6 +1,6 @@
 //center map in middle of Portland, zoom to level 11
-var pdxCoords = new google.maps.LatLng(45.521190, -122.629835)
-var mapZoomLevel = 11;
+let pdxCoords = new google.maps.LatLng(45.521190, -122.629835)
+let mapZoomLevel = 11;
 
 //Create empty Bus Array:
 let localBusses = [];

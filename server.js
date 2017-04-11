@@ -3,10 +3,11 @@ var app = require('express')(),
     http = require('http').Server(app),
     io = require('socket.io')(http);
 
-var busses = [];
+let busses = [];
 const PORT = process.env.PORT || 3000;
-const IP = process.env.IP || '127.0.0.1';
-const URL = 'http://developer.trimet.org/ws/v2/vehicles?APPID=155EA63E56014EC522C98433B';
+const IP = process.env.IP || '0.0.0.0';
+const APPID = process.env.APPID;
+const URL = `http://developer.trimet.org/ws/v2/vehicles?APPID=${APPID}`;
 
 function fetchTriMet(){
   request(URL, function(err, res, body){
