@@ -1,4 +1,5 @@
-var app = require('express')(),
+var express = require('express'),
+    app = express(),
     request = require('request'),
     http = require('http').Server(app),
     io = require('socket.io')(http);
