@@ -41,6 +41,10 @@ function fetchTriMet(){
 }
 setInterval(fetchTriMet, 5000);
 
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+
 io.on('connection', function(socket){
   socket.emit('initial_data', busses);
   console.log('a user connected');
