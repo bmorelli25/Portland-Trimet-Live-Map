@@ -18,17 +18,13 @@ map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 var socket = io.connect('https://portland-trimet-live-map.herokuapp.com/');
 
-//uses web sockets
-socket.on('initial_data', function(busses){
-  if(busses){
+socket.on('busses_moved', function(busses){
+  if(localBusses.length === 0 && busses.length > 0){
     busses.forEach(function(bus){
       localBusses.push(bus);
       createMarker(bus);
     });
-  }
-});
-socket.on('busses_moved', function(busses){
-  if(busses.length > 0){
+  } else if (busses.length > 0){
     busses.forEach(function(bus){
       localBusses.forEach(function(localBus){
         if(bus.id !== localBus.id) return;
