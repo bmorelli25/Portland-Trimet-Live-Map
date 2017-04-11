@@ -49,7 +49,7 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-  socket.emit('initial_data', busses);
+  socket.emit('busses_moved', busses);
   console.log('a user connected');
 });
 
