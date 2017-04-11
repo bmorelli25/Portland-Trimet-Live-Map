@@ -16,7 +16,7 @@ var mapOptions = {
 //creates the map in the div"map" using the map options
 map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-var socket = io.connect('http://localhost:3000/');
+var socket = io.connect();
 
 //uses web sockets
 socket.on('initial_data', function(busses){
