@@ -9,6 +9,8 @@ const IP = process.env.IP || '0.0.0.0';
 const APPID = process.env.APPID;
 const URL = `http://developer.trimet.org/ws/v2/vehicles?APPID=${APPID}`;
 
+app.use(express.static('public'));
+
 function fetchTriMet(){
   request(URL, function(err, res, body){
     if(err){
