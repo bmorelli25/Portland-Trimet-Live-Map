@@ -14,7 +14,13 @@ var mapOptions = {
 };
 
 //creates the map in the div"map" using the map options
-map = new google.maps.Map(document.getElementById("map"), mapOptions);
+//Sets up and adds transit layer which displays transit routes (for rail)
+function initMap(){
+  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+  var transitLayer = new google.maps.TransitLayer();
+  transitLayer.setMap(map);
+}
 
 var socket = io.connect('https://portland-trimet-live-map.herokuapp.com/');
 
