@@ -1,22 +1,18 @@
-//center map in middle of Portland, zoom to level 11
-let pdxCoords = new google.maps.LatLng(45.521190, -122.629835)
-let mapZoomLevel = 11;
-
-//Create empty Bus Array:
 let localBusses = [];
 let markers = {};
 let railNumbers = [90,100,190,200,290];
 
-//load the map options
-var mapOptions = {
-    center: pdxCoords,
-    zoom: mapZoomLevel
-};
-
 //creates the map in the div"map" using the map options
 //Sets up and adds transit layer which displays transit routes (for rail)
 function initMap(){
-  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  //center map in middle of Portland, zoom to level 11
+  let pdxCoords = new google.maps.LatLng(45.521190, -122.629835)
+  let mapZoomLevel = 11;
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: pdxCoords,
+    zoom: mapZoomLevel
+  });
 
   var transitLayer = new google.maps.TransitLayer();
   transitLayer.setMap(map);
