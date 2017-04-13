@@ -17,6 +17,7 @@ function initMap(){
   var transitLayer = new google.maps.TransitLayer();
   transitLayer.setMap(map);
 }
+initMap();
 
 var socket = io.connect('https://portland-trimet-live-map.herokuapp.com/');
 
