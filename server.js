@@ -1,6 +1,7 @@
 var express = require('express'),
     app = express(),
     request = require('request'),
+    rp = require('request-promise'),
     http = require('http').Server(app),
     io = require('socket.io')(http);
 
@@ -8,17 +9,21 @@ let busses = [];
 const PORT = process.env.PORT || 3000;
 const IP = process.env.IP || '0.0.0.0';
 const APPID = process.env.APPID;
-const URL = `http://developer.trimet.org/ws/v2/vehicles?APPID=${APPID}`;
+let options = {
+    uri: 'http://developer.trimet.org/ws/v2/vehicles',
+    qs: {
+      APPID
+    },
+    json: true
+};
 
 app.use(express.static('public'));
 
 function fetchTriMet(){
-  request(URL, function(err, res, body){
-    if(err){
-      console.log('Error fetching data from Trimet: ',err);
-    } else {
+  rp(options)
+    .then(function (data) {
       let tempArr = [];
-      let vehicles = JSON.parse(body).resultSet.vehicle;
+      let vehicles = data.resultSet.vehicle;
       let Vehicle = function(bus){
         this.longitude = bus.longitude;
         this.latitude = bus.latitude;
@@ -29,18 +34,20 @@ function fetchTriMet(){
         this.delay = bus.delay; //delayV
         this.type = bus.type; // rail or bus
       };
+
       if(vehicles.length > 0){
         for(let i = 0, len = vehicles.length; i < len; i++){
           if(vehicles[i].nextStopSeq === null) continue;
-          let bus = new Vehicle(vehicles[i]);
-          tempArr.push(bus);
+          tempArr.push(new Vehicle(vehicles[i]));
         }
       }
+
       busses = tempArr.slice();
-      // console.log(busses);
       io.emit('busses_moved', busses);
-    }
-  });
+    })
+    .catch(function (err) {
+      console.log('Error fetching data from Trimet: ',err);
+    });
 }
 setInterval(fetchTriMet, 5000);
 
